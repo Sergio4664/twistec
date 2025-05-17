@@ -3,40 +3,57 @@ var twistIdCounter = 1;
 var twistInput = document.getElementById('twistInput');
 var publishBtn = document.getElementById('publishBtn');
 var twistsContainer = document.getElementById('twistsContainer');
-// Publicar twist nuevo o respuesta a un hilo
+// Inicio de sesión con nombre
+var username = localStorage.getItem("username");
+var loginModal = document.getElementById("loginModal");
+var usernameInput = document.getElementById("usernameInput");
+var loginBtn = document.getElementById("loginBtn");
+if (!username) {
+    loginModal.style.display = "flex";
+}
+loginBtn.addEventListener("click", function () {
+    var name = usernameInput.value.trim();
+    if (name.length === 0) {
+        alert("Por favor, ingresa tu nombre.");
+        return;
+    }
+    localStorage.setItem("username", name);
+    username = name;
+    loginModal.style.display = "none";
+});
+// Publicar twist
 function publishTwist(content, parentId) {
     if (parentId === void 0) { parentId = null; }
     var newTwist = {
         id: twistIdCounter++,
         parentId: parentId,
         content: content.trim(),
+        author: username !== null && username !== void 0 ? username : "Anónimo",
         children: [],
     };
     if (parentId === null) {
         twists.push(newTwist);
     }
     else {
-        // Buscar el padre y agregar como hijo
         var parentTwist = findTwistById(parentId, twists);
-        if (parentTwist) {
+        if (parentTwist)
             parentTwist.children.push(newTwist);
-        }
     }
     renderTwists();
 }
-// Buscar twist por id recursivamente
+// Buscar twist por ID
 function findTwistById(id, list) {
     for (var _i = 0, list_1 = list; _i < list_1.length; _i++) {
         var twist = list_1[_i];
         if (twist.id === id)
             return twist;
-        var foundInChildren = findTwistById(id, twist.children);
-        if (foundInChildren)
-            return foundInChildren;
+        var found = findTwistById(id, twist.children);
+        if (found)
+            return found;
     }
     return null;
 }
-// Renderizar twists y hilos
+// Mostrar twists
 function renderTwists() {
     twistsContainer.innerHTML = '';
     for (var _i = 0, twists_1 = twists; _i < twists_1.length; _i++) {
@@ -45,29 +62,30 @@ function renderTwists() {
         twistsContainer.appendChild(twistElem);
     }
 }
-// Crear elemento HTML de twist recursivamente con hilos
-function createTwistElement(twist) {
+// Crear twist + hijos con profundidad limitada
+function createTwistElement(twist, depth) {
+    if (depth === void 0) { depth = 0; }
     var div = document.createElement('div');
     div.classList.add('twist');
     if (twist.parentId !== null)
         div.classList.add('threaded');
-    div.textContent = twist.content;
-    // Botón para responder
-    var replyBtn = document.createElement('button');
-    replyBtn.textContent = 'Responder';
-    replyBtn.className = 'reply-btn';
-    replyBtn.addEventListener('click', function () { return openReplyInput(div, twist.id); });
-    div.appendChild(replyBtn);
-    // Renderizar respuestas hijas
-    if (twist.children.length > 0) {
-        twist.children.forEach(function (childTwist) {
-            var childElem = createTwistElement(childTwist);
-            div.appendChild(childElem);
-        });
+    div.innerHTML = "<strong>".concat(twist.author, ":</strong> ").concat(twist.content);
+    // Solo permitir responder si profundidad < 2
+    if (depth < 2) {
+        var replyBtn = document.createElement('button');
+        replyBtn.textContent = 'Responder';
+        replyBtn.className = 'reply-btn';
+        replyBtn.addEventListener('click', function () { return openReplyInput(div, twist.id); });
+        div.appendChild(replyBtn);
+    }
+    for (var _i = 0, _a = twist.children; _i < _a.length; _i++) {
+        var child = _a[_i];
+        var childElem = createTwistElement(child, depth + 1);
+        div.appendChild(childElem);
     }
     return div;
 }
-// Mostrar área para responder dentro del hilo
+// Caja de respuesta
 function openReplyInput(parentElem, parentId) {
     if (parentElem.querySelector('.reply-input'))
         return;
@@ -88,15 +106,14 @@ function openReplyInput(parentElem, parentId) {
     parentElem.appendChild(textarea);
     parentElem.appendChild(sendBtn);
 }
-// Evento click para publicar twist principal
+// Publicar principal
 publishBtn.addEventListener('click', function () {
     var content = twistInput.value;
     if (content.trim().length === 0) {
         alert('Escribe un twist antes de publicar');
         return;
     }
-    publishTwist(content, null);
+    publishTwist(content);
     twistInput.value = '';
 });
-// Render inicial (vacío)
 renderTwists();

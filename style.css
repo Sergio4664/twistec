@@ -88,10 +88,8 @@ textarea#twistInput:focus {
   margin-left: 30px;
   border-left: 3px solid #1da1f2;
   padding-left: 15px;
-  margin-top: 10px;
-  margin-bottom: 10px; /* Agrega espacio entre respuestas */
+  margin-bottom: 10px;
 }
-
 
 .reply-btn {
   position: absolute;
@@ -109,7 +107,6 @@ textarea#twistInput:focus {
   text-decoration: underline;
 }
 
-/* Estilos nuevos para respuesta dinámica */
 .reply-input {
   width: 100%;
   margin-top: 10px;
@@ -145,3 +142,47 @@ textarea#twistInput:focus {
   background-color: #0d8ddb;
 }
 
+/* Modal de login */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.modal-content input {
+  padding: 10px;
+  font-size: 16px;
+  width: 100%;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.modal-content button {
+  background-color: #1da1f2;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.modal-content button:hover {
+  background-color: #0d8ddb;
+}
