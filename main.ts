@@ -1,27 +1,36 @@
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, push, onValue } from "firebase/database";
+
 type Twist = {
   id: number;
   parentId: number | null;
   content: string;
   author: string;
-  children: Twist[];
 };
 
-let twists: Twist[] = [];
-let twistIdCounter = 1;
+const firebaseConfig = {
+  apiKey: "AIzaSyAT1uC7_Zf40kl0dC4XyL6XldlIoFdh4fM",
+  authDomain: "twistec-db.firebaseapp.com",
+  databaseURL: "https://twistec-db-default-rtdb.firebaseio.com",
+  projectId: "twistec-db",
+  storageBucket: "twistec-db.firebasestorage.app",
+  messagingSenderId: "136685067698",
+  appId: "1:136685067698:web:9d132689170b7a343b18ab"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
 const twistInput = document.getElementById('twistInput') as HTMLTextAreaElement;
 const publishBtn = document.getElementById('publishBtn') as HTMLButtonElement;
 const twistsContainer = document.getElementById('twistsContainer') as HTMLElement;
 
-// Inicio de sesión con nombre
 let username = localStorage.getItem("username");
 const loginModal = document.getElementById("loginModal") as HTMLDivElement;
 const usernameInput = document.getElementById("usernameInput") as HTMLInputElement;
 const loginBtn = document.getElementById("loginBtn") as HTMLButtonElement;
 
-if (!username) {
-  loginModal.style.display = "flex";
-}
+if (!username) loginModal.style.display = "flex";
 
 loginBtn.addEventListener("click", () => {
   const name = usernameInput.value.trim();
@@ -34,53 +43,40 @@ loginBtn.addEventListener("click", () => {
   loginModal.style.display = "none";
 });
 
-// Publicar twist
 function publishTwist(content: string, parentId: number | null = null): void {
-  const newTwist: Twist = {
-    id: twistIdCounter++,
-    parentId: parentId,
+  const twist: Twist = {
+    id: Date.now(),
+    parentId,
     content: content.trim(),
-    author: username ?? "Anónimo",
-    children: [],
+    author: username ?? "Anónimo"
   };
-
-  if (parentId === null) {
-    twists.push(newTwist);
-  } else {
-    const parentTwist = findTwistById(parentId, twists);
-    if (parentTwist) parentTwist.children.push(newTwist);
-  }
-
-  renderTwists();
+  push(ref(db, "twists"), twist);
 }
 
-// Buscar twist por ID
-function findTwistById(id: number, list: Twist[]): Twist | null {
-  for (const twist of list) {
-    if (twist.id === id) return twist;
-    const found = findTwistById(id, twist.children);
-    if (found) return found;
-  }
-  return null;
-}
-
-// Mostrar twists
-function renderTwists(): void {
+onValue(ref(db, "twists"), (snapshot) => {
+  const data = snapshot.val();
   twistsContainer.innerHTML = '';
-  for (const twist of twists) {
-    const twistElem = createTwistElement(twist);
-    twistsContainer.appendChild(twistElem);
+  if (data) {
+    const twists = Object.values(data) as Twist[];
+    renderTwists(twists);
   }
+});
+
+function renderTwists(twists: Twist[]): void {
+  twists.forEach(t => {
+    if (!t.parentId) {
+      const twistElem = createTwistElement(t, twists, 0);
+      twistsContainer.appendChild(twistElem);
+    }
+  });
 }
 
-// Crear twist + hijos con profundidad limitada
-function createTwistElement(twist: Twist, depth: number = 0): HTMLDivElement {
+function createTwistElement(twist: Twist, all: Twist[], depth: number): HTMLDivElement {
   const div = document.createElement('div');
   div.classList.add('twist');
   if (twist.parentId !== null) div.classList.add('threaded');
   div.innerHTML = `<strong>${twist.author}:</strong> ${twist.content}`;
 
-  // Solo permitir responder si profundidad < 2
   if (depth < 2) {
     const replyBtn = document.createElement('button');
     replyBtn.textContent = 'Responder';
@@ -89,15 +85,15 @@ function createTwistElement(twist: Twist, depth: number = 0): HTMLDivElement {
     div.appendChild(replyBtn);
   }
 
-  for (const child of twist.children) {
-    const childElem = createTwistElement(child, depth + 1);
+  const children = all.filter(child => child.parentId === twist.id);
+  for (const child of children) {
+    const childElem = createTwistElement(child, all, depth + 1);
     div.appendChild(childElem);
   }
 
   return div;
 }
 
-// Caja de respuesta
 function openReplyInput(parentElem: HTMLElement, parentId: number): void {
   if (parentElem.querySelector('.reply-input')) return;
 
@@ -122,15 +118,12 @@ function openReplyInput(parentElem: HTMLElement, parentId: number): void {
   parentElem.appendChild(sendBtn);
 }
 
-// Publicar principal
 publishBtn.addEventListener('click', () => {
   const content = twistInput.value;
   if (content.trim().length === 0) {
-    alert('Escribe un twist antes de publicar');
+    alert("Escribe un twist antes de publicar.");
     return;
   }
   publishTwist(content);
   twistInput.value = '';
 });
-
-renderTwists();
