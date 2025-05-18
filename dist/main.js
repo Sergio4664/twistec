@@ -41,12 +41,13 @@ function publishTwist(content, parentId = null) {
     push(ref(db, "twists"), twist);
 }
 onValue(ref(db, "twists"), (snapshot) => {
-    const data = snapshot.val();
-    twistsContainer.innerHTML = '';
-    if (data) {
-        const twists = Object.values(data);
-        renderTwists(twists);
-    }
+  const data = snapshot.val();
+  console.log("Datos desde Firebase:", data);
+  twistsContainer.innerHTML = '';
+  if (data) {
+    const twists = Object.values(data);
+    renderTwists(twists);
+  }
 });
 function renderTwists(twists) {
     twists.forEach(t => {

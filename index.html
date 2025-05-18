@@ -5,32 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TwistTec</title>
   <link rel="stylesheet" href="style.css" />
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js";
-    const firebaseConfig = {
-      apiKey: "AIzaSyAT1uC7_Zf40kl0dC4XyL6XldlIoFdh4fM",
-      authDomain: "twistec-db.firebaseapp.com",
-      databaseURL: "https://twistec-db-default-rtdb.firebaseio.com",
-      projectId: "twistec-db",
-      storageBucket: "twistec-db.firebasestorage.app",
-      messagingSenderId: "136685067698",
-      appId: "1:136685067698:web:9d132689170b7a343b18ab"
-    };
-    const app = initializeApp(firebaseConfig);
-    window.firebaseApp = app;
-  </script>
 </head>
 <body>
 
   <!-- Modal de inicio de sesión -->
-<div id="loginModal" class="modal">
-  <div class="modal-content">
-    <h2>Ingresa tu nombre</h2>
-    <input type="text" id="usernameInput" placeholder="Tu nombre..." />
-    <button id="loginBtn">Continuar</button>
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <h2>Ingresa tu nombre</h2>
+      <input type="text" id="usernameInput" placeholder="Tu nombre..." />
+      <button id="loginBtn">Continuar</button>
+    </div>
   </div>
-</div>
-
 
   <main>
     <h1>TwistTec</h1>
@@ -49,6 +34,7 @@
     </section>
   </main>
 
+  <!-- Cargar el archivo compilado -->
   <script type="module" src="main.js"></script>
 </body>
 </html>
