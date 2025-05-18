@@ -30,7 +30,9 @@ const loginModal = document.getElementById("loginModal") as HTMLDivElement;
 const usernameInput = document.getElementById("usernameInput") as HTMLInputElement;
 const loginBtn = document.getElementById("loginBtn") as HTMLButtonElement;
 
-if (!username) loginModal.style.display = "flex";
+if (!username) {
+  loginModal.style.display = "flex";
+}
 
 loginBtn.addEventListener("click", () => {
   const name = usernameInput.value.trim();
