@@ -7,8 +7,6 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-  <!-- Modal de inicio de sesión -->
   <div id="loginModal" class="modal">
     <div class="modal-content">
       <h2>Ingresa tu nombre</h2>
@@ -16,25 +14,14 @@
       <button id="loginBtn">Continuar</button>
     </div>
   </div>
-
   <main>
     <h1>TwistTec</h1>
     <section class="new-twist">
       <textarea id="twistInput" placeholder="Escribe tu twist..." maxlength="280"></textarea>
-      <button id="publishBtn" class="icon-button" aria-label="Agregar hilo">
-        <svg width="20" height="20" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
-          <line x1="12" y1="5" x2="12" y2="19"></line>
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
-        <span>Agregar hilo</span>
-      </button>
+      <button id="publishBtn" class="icon-button">Agregar hilo</button>
     </section>
-    <section id="twistsContainer" class="twists-container">
-      <!-- Aquí aparecerán los twists publicados -->
-    </section>
+    <section id="twistsContainer" class="twists-container"></section>
   </main>
-
-  <!-- Cargar el archivo compilado -->
-  <script type="module" src="main.js"></script>
+  <script src="dist/bundle.js"></script>
 </body>
 </html>
